@@ -4,7 +4,7 @@ import Steps from "@/components/modules/Home/Steps";
 import Testimonials from "@/components/modules/Home/Testimonials";
 import TopRatedDoctors from "@/components/modules/Home/TopRatedDoctors";
 import Head from "next/head";
-
+//
 export default function Home() {
   return (
     <>
