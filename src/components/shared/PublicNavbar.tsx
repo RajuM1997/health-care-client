@@ -48,7 +48,7 @@ const PublicNavbar = () => {
           </ul>
         </nav>
         <div className="hidden md:block">
-          <Link href={"/"}>
+          <Link href={"/login"}>
             <Button>Login</Button>
           </Link>
         </div>
