@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { loginUser } from "@/services/auth/loginUser";
 import { useActionState } from "react";
 
-const LoginForm = () => {
+const LoginForm = ({ redirect }: { redirect: string | undefined }) => {
   const [state, formAction, isPending] = useActionState(loginUser, null);
   console.log(state);
 
@@ -27,8 +27,9 @@ const LoginForm = () => {
 
   return (
     <form action={formAction}>
+      {redirect && <input type="hidden" name="redirect" value={redirect} />}
       <FieldGroup>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1  gap-4">
           {/* email */}
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
