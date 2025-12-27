@@ -10,10 +10,17 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { registerPatient } from "@/services/auth/register";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   const [state, formAction, isPending] = useActionState(registerPatient, null);
+
+  useEffect(() => {
+    if (state && !state.success && state.message) {
+      toast.error(state.message);
+    }
+  }, [state]);
 
   const getFieldError = (fieldName: string) => {
     if (state && state.errors) {
