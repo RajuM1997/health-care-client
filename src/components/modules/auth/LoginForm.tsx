@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import InputFieldsError from "@/components/shared/InputFieldsError";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -21,15 +21,6 @@ const LoginForm = ({ redirect }: { redirect: string | undefined }) => {
     }
   }, [state]);
 
-  const getFieldError = (fieldName: string) => {
-    if (state && state.errors) {
-      const error = state.errors.find((err: any) => err.field === fieldName);
-      return error.message;
-    } else {
-      return null;
-    }
-  };
-
   return (
     <form action={formAction}>
       {redirect && <input type="hidden" name="redirect" value={redirect} />}
@@ -44,11 +35,7 @@ const LoginForm = ({ redirect }: { redirect: string | undefined }) => {
               type="email"
               placeholder="example@gmail.com"
             />
-            {getFieldError("email") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("email")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="email" state={state} />
           </Field>
 
           {/* password */}
@@ -60,11 +47,7 @@ const LoginForm = ({ redirect }: { redirect: string | undefined }) => {
               type="password"
               placeholder="*******"
             />
-            {getFieldError("password") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("password")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="password" state={state} />
           </Field>
         </div>
         <FieldGroup className="mt-4">

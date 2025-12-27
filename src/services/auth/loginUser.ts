@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import z from "zod";
 import { parse } from "cookie";
 import { redirect } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -10,21 +9,9 @@ import {
   UserRole,
 } from "@/lib/auth-utils";
 import { setCookie } from "./tokenHandler";
-
-const loginValidationZodSchema = z.object({
-  email: z.email({
-    error: "Email is required",
-  }),
-  password: z
-    .string()
-    .min(6, {
-      error:
-        "Password is required and Password must be at least 6 characters long",
-    })
-    .max(100, {
-      error: "Password must be at most 100 characters long",
-    }),
-});
+import { serverFetch } from "@/lib/server-fetch";
+import { zodValidator } from "@/lib/zodValidator";
+import { loginValidationZodSchema } from "@/zod/auth.validation";
 
 export const loginUser = async (
   _currentState: any,
@@ -34,23 +21,22 @@ export const loginUser = async (
     const redirectTo = formData.get("redirect") || null;
     let accessTokenObject: null | any = null;
     let refreshTokenObject: null | any = null;
-    const loginData = {
+    const payload = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-    const validatedFields = loginValidationZodSchema.safeParse(loginData);
-    if (!validatedFields.success) {
-      return {
-        success: false,
-        errors: validatedFields.error.issues.map((issue) => ({
-          field: issue.path[0],
-          message: issue.message,
-        })),
-      };
+
+    if (zodValidator(payload, loginValidationZodSchema).success === false) {
+      return zodValidator(payload, loginValidationZodSchema);
     }
-    const response = await fetch("http://localhost:3001/api/v1/auth/login", {
-      method: "POST",
-      body: JSON.stringify(loginData),
+
+    const validatedFields = zodValidator(
+      payload,
+      loginValidationZodSchema
+    ).data;
+
+    const response = await serverFetch.post("/auth/login", {
+      body: JSON.stringify(validatedFields),
       headers: {
         "Content-Type": "application/json",
       },

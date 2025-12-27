@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import InputFieldsError from "@/components/shared/InputFieldsError";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -22,19 +22,6 @@ const RegisterForm = () => {
     }
   }, [state]);
 
-  const getFieldError = (fieldName: string) => {
-    if (state && state.errors) {
-      const error = state.errors.find((err: any) => err.field === fieldName);
-      if (error?.message) {
-        return error.message;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  };
-
   return (
     <form action={formAction}>
       <FieldGroup>
@@ -48,11 +35,8 @@ const RegisterForm = () => {
               type="text"
               placeholder="Evil Rabbit"
             />
-            {getFieldError("name") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("name")}
-              </FieldDescription>
-            )}
+
+            <InputFieldsError field="name" state={state} />
           </Field>
           {/* address */}
           <Field>
@@ -63,11 +47,7 @@ const RegisterForm = () => {
               type="text"
               placeholder="Khulna"
             />
-            {getFieldError("address") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("address")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="address" state={state} />
           </Field>
           {/* email */}
           <Field>
@@ -78,11 +58,7 @@ const RegisterForm = () => {
               type="email"
               placeholder="example@gmail.com"
             />
-            {getFieldError("email") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("email")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="email" state={state} />
           </Field>
           {/* password */}
           <Field>
@@ -93,11 +69,7 @@ const RegisterForm = () => {
               type="password"
               placeholder="*******"
             />
-            {getFieldError("password") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("password")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="password" state={state} />
           </Field>
           {/* password */}
           <Field>
@@ -108,11 +80,7 @@ const RegisterForm = () => {
               type="password"
               placeholder="*******"
             />
-            {getFieldError("confirmPassword") && (
-              <FieldDescription className="text-red-500">
-                {getFieldError("confirmPassword")}
-              </FieldDescription>
-            )}
+            <InputFieldsError field="confirmPassword" state={state} />
           </Field>
         </div>
         <FieldGroup className="mt-4">
