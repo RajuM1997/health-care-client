@@ -45,7 +45,7 @@ export async function createSpeciality(_prevState: any, formData: FormData) {
   }
 }
 
-export async function getSpecility() {
+export async function getSpecialities() {
   try {
     const response = await serverFetch.get("/specialties");
     const result = await response.json();
@@ -63,7 +63,7 @@ export async function getSpecility() {
   }
 }
 
-export async function deleteSpecility(id: string) {
+export async function deleteSpeciality(id: string) {
   try {
     const response = await serverFetch.delete(`/specialties/${id}`);
     const result = await response.json();
