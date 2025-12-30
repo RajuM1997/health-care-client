@@ -30,22 +30,26 @@ export const loginUser = async (
       return zodValidator(payload, loginValidationZodSchema);
     }
 
-    const validatedFields = zodValidator(
+    const validatedPayload = zodValidator(
       payload,
       loginValidationZodSchema
     ).data;
 
-    const response = await serverFetch.post("/auth/login", {
-      body: JSON.stringify(validatedFields),
+    const res = await serverFetch.post("/auth/login", {
+      body: JSON.stringify(validatedPayload),
       headers: {
         "Content-Type": "application/json",
       },
     });
-    const result = await response.json();
-    const setCookieHeaders = response.headers.getSetCookie();
+
+    const result = await res.json();
+
+    const setCookieHeaders = res.headers.getSetCookie();
+
     if (setCookieHeaders && setCookieHeaders.length > 0) {
-      setCookieHeaders.forEach((cookie) => {
+      setCookieHeaders.forEach((cookie: string) => {
         const parsedCookie = parse(cookie);
+
         if (parsedCookie["accessToken"]) {
           accessTokenObject = parsedCookie;
         }
@@ -54,31 +58,33 @@ export const loginUser = async (
         }
       });
     } else {
-      throw new Error("No set-cookie header found");
+      throw new Error("No Set-Cookie header found");
     }
+
     if (!accessTokenObject) {
-      throw new Error("Access token not found in cookies");
+      throw new Error("Tokens not found in cookies");
     }
+
     if (!refreshTokenObject) {
-      throw new Error("Refresh token not found in cookies");
+      throw new Error("Tokens not found in cookies");
     }
 
     await setCookie("accessToken", accessTokenObject.accessToken, {
       secure: true,
       httpOnly: true,
       maxAge: parseInt(accessTokenObject["Max-Age"]) || 1000 * 60 * 60,
-      path: accessTokenObject.path || "/",
-      sameSite: accessTokenObject["SameSite"] || "lax",
+      path: accessTokenObject.Path || "/",
+      sameSite: accessTokenObject["SameSite"] || "none",
     });
+
     await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       secure: true,
       httpOnly: true,
       maxAge:
         parseInt(refreshTokenObject["Max-Age"]) || 1000 * 60 * 60 * 24 * 90,
-      path: refreshTokenObject.path || "/",
-      sameSite: refreshTokenObject["SameSite"] || "lax",
+      path: refreshTokenObject.Path || "/",
+      sameSite: refreshTokenObject["SameSite"] || "none",
     });
-
     const verifiedToken: JwtPayload | string = jwt.verify(
       accessTokenObject.accessToken,
       process.env.JWT_ACCESS_SECRET as string
@@ -87,16 +93,30 @@ export const loginUser = async (
     if (typeof verifiedToken === "string") {
       throw new Error("Invalid token");
     }
+
     const userRole: UserRole = verifiedToken.role;
 
     if (!result.success) {
       throw new Error(result.message || "Login failed");
     }
+    console.log("Hello", result.data);
+
+    if (redirectTo && result.data.needPasswordChange) {
+      const requestedPath = redirectTo.toString();
+      if (isValidRedirectForRole(requestedPath, userRole)) {
+        redirect(`/reset-password?redirect=${requestedPath}`);
+      } else {
+        redirect("/reset-password");
+      }
+    }
+    if (result.data.needPasswordChange) {
+      redirect("/reset-password");
+    }
 
     if (redirectTo) {
       const requestedPath = redirectTo.toString();
       if (isValidRedirectForRole(requestedPath, userRole)) {
-        redirect(`${redirect(requestedPath)}?loggedIn=true`);
+        redirect(`${requestedPath}?loggedIn=true`);
       } else {
         redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
       }
@@ -104,6 +124,7 @@ export const loginUser = async (
       redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
     }
   } catch (error: any) {
+    // Re-throw NEXT_REDIRECT errors so Next.js can handle them
     if (error?.digest?.startsWith("NEXT_REDIRECT")) {
       throw error;
     }
@@ -111,7 +132,9 @@ export const loginUser = async (
     return {
       success: false,
       message: `${
-        process.env.NODE_ENV === "development" ? error.message : "Login failed"
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Login Failed. You might have entered incorrect email or password."
       }`,
     };
   }

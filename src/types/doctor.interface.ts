@@ -3,7 +3,7 @@ export interface IDoctor {
   name: string;
   email: string;
   password: string;
-  contactNumber: string;
+  contactNumber?: string;
   address?: string;
   registrationNumber: string;
   experience?: number;

@@ -7,5 +7,6 @@ export interface IPatient {
   profilePhoto?: string;
   isDeleted?: boolean;
   createdAt?: string;
+  contactNumber?: string;
   updatedAt?: string;
 }
