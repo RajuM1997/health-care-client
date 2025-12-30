@@ -1,9 +1,11 @@
+import { IDoctorSchedule } from "./schedule.interface";
+
 export interface IDoctor {
   id?: string;
   name: string;
   email: string;
   password: string;
-  contactNumber?: string;
+  contactNumber: string;
   address?: string;
   registrationNumber: string;
   experience?: number;
@@ -12,10 +14,10 @@ export interface IDoctor {
   qualification: string;
   currentWorkingPlace: string;
   designation: string;
-  profilePhoto?: File | string;
-  isDeleted?: boolean;
   specialties?: string[];
+  profilePhoto?: File | string;
   removeSpecialties?: string[];
+  isDeleted?: boolean;
   averageRating?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -27,4 +29,6 @@ export interface IDoctor {
       icon?: string;
     };
   }>;
+
+  doctorSchedules?: IDoctorSchedule[];
 }

@@ -13,7 +13,17 @@ import { getNewAccessToken } from "./services/auth/auth.service";
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const hasTokenRefreshedParam =
+    request.nextUrl.searchParams.has("tokenRefreshed");
 
+  // if coming back after token refresh, remove the param and continue
+  if (hasTokenRefreshedParam) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("tokenRefreshed");
+    return NextResponse.redirect(url);
+  }
+
+  // if token was refreshed, redirect to same page to fetch with new token
   const tokenRefreshResult = await getNewAccessToken();
   if (tokenRefreshResult?.tokenRefreshed) {
     const url = request.nextUrl.clone();

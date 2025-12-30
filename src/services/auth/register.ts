@@ -47,9 +47,10 @@ export const registerPatient = async (
       newFormData.append("file", formData.get("file") as Blob);
     }
 
-    const res = await serverFetch.post("/create-patient", {
+    const res = await serverFetch.post("/user/create-patient", {
       body: newFormData,
     });
+
     const result = await res.json();
     if (result.success) {
       await loginUser(_currentState, formData);
