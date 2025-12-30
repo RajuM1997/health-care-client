@@ -8,6 +8,7 @@ interface UserInfoCellProps {
   name: string;
   email: string;
   photo?: string | null;
+  address?: string | null;
 }
 
 export function UserInfoCell({ name, email, photo }: UserInfoCellProps) {

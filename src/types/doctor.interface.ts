@@ -12,12 +12,15 @@ export interface IDoctor {
   qualification: string;
   currentWorkingPlace: string;
   designation: string;
-  profilePhoto?: string;
+  profilePhoto?: File | string;
   isDeleted?: boolean;
+  specialties?: string[];
+  removeSpecialties?: string[];
   averageRating?: number;
   createdAt?: string;
   updatedAt?: string;
   doctorSpecialties?: Array<{
+    specialitiesId: string;
     specialties?: {
       id: string;
       title: string;
